@@ -19,17 +19,14 @@ class Prompt_Generator:
         swich_text_all.append(swich_text)
       else:
         swich_loc.append(0)
-
+    comb_list =[]
     if not swich_text_all==[]: comb_list = self.create_list(swich_text_all)
 
     result_text_list = []
-    for c_list in comb_list:
-      counter = 0
+
+    if comb_list ==[]:
       gen_text = ""
-      for text,loc_ in zip(origin_text, swich_loc):
-        if loc_: 
-          text=c_list[counter]
-          counter +=1
+      for text in origin_text:
         if "\n" in text: text=text[:-1] 
         if "*" in text: text = self.strong_prompt(text=text)
         if "/" in text: text = self.weak_prompt(text=text)
@@ -37,6 +34,21 @@ class Prompt_Generator:
       else:
         gen_text = gen_text[:-2]
         result_text_list.append(gen_text)
+    else:
+      for c_list in comb_list:
+        counter = 0
+        gen_text = ""
+        for text,loc_ in zip(origin_text, swich_loc):
+          if loc_: 
+            text=c_list[counter]
+            counter +=1
+          if "\n" in text: text=text[:-1] 
+          if "*" in text: text = self.strong_prompt(text=text)
+          if "/" in text: text = self.weak_prompt(text=text)
+          gen_text += text + ", "
+        else:
+          gen_text = gen_text[:-2]
+          result_text_list.append(gen_text)
     
     with open("./prompt.txt","w") as wf:
       for index, writer in enumerate(result_text_list): 
