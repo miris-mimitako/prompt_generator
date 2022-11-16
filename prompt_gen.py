@@ -6,11 +6,15 @@ class Prompt_Generator:
     pass
 
   def main(self):
+    # Read text
     with open("./sorce.txt","r") as f:
       origin_text = f.readlines()
 
+    # Define list
     swich_loc = []
     swich_text_all = []
+
+    # Split alter text
     for text in origin_text:
       swich_text = []
       if "|" in text: 
@@ -19,6 +23,7 @@ class Prompt_Generator:
         swich_text_all.append(swich_text)
       else:
         swich_loc.append(0)
+    
     comb_list =[]
     if not swich_text_all==[]: comb_list = self.create_list(swich_text_all)
 
@@ -45,6 +50,8 @@ class Prompt_Generator:
           if "\n" in text: text=text[:-1] 
           if "*" in text: text = self.strong_prompt(text=text)
           if "/" in text: text = self.weak_prompt(text=text)
+          if text[-1] == " ": text=text[:-1]
+          if text[-1] == ",": text=text[:-1]
           gen_text += text + ", "
         else:
           gen_text = gen_text[:-2]
@@ -64,12 +71,16 @@ class Prompt_Generator:
   def strong_prompt(self,text):
     count_ = text.count("*")
     text = text.replace("*","")
+    if text[-1] == " ": text=text[:-1]
+    if text[-1] == ",": text=text[:-1]
     new_text = "("*count_ + text + ")"*count_
     return new_text
 
   def weak_prompt(self,text):
     count_ = text.count("/")
     text = text.replace("/","")
+    if text[-1] == " ": text=text[:-1]
+    if text[-1] == ",": text=text[:-1]
     new_text = "["*count_ + text + "]"*count_
     return new_text
 
