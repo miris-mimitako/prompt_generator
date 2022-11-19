@@ -1,10 +1,11 @@
 {
   "dir":{
-    "input_text":"",
-    "output_path":""
+    "input_text":"source.txt",
+    "output_path":"prompt_lists"
   },
   "output_settings":{
     "file_prefix":"date",
+    "main_name":"prompt_list",
     "file_sufix":""
   },
   "prompt_settings":{
