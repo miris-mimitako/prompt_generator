@@ -28,8 +28,9 @@ class Prompt_Generator:
     if not swich_text_all==[]: comb_list = self.create_list(swich_text_all)
 
     result_text_list = []
-
+    
     if comb_list ==[]:
+      # Not use split text
       gen_text = ""
       for text in origin_text:
         if "\n" in text: text=text[:-1] 
@@ -40,6 +41,7 @@ class Prompt_Generator:
         gen_text = gen_text[:-2]
         result_text_list.append(gen_text)
     else:
+      # use split text
       for c_list in comb_list:
         counter = 0
         gen_text = ""

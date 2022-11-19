@@ -1,0 +1,14 @@
+{
+  "dir":{
+    "input_text":"",
+    "output_path":""
+  },
+  "output_settings":{
+    "file_prefix":"date",
+    "file_sufix":""
+  },
+  "prompt_settings":{
+    "strong_brackets":"()",
+    "weak_brackets":"[]"
+    }
+}
