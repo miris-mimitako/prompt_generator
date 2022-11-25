@@ -7,10 +7,18 @@ from pathlib import Path
 
 class Prompt_Generator:
   def __init__(self) -> None:
-    with open("./config.json") as jf:
-      self.dic_config = json.load(jf)
+    try:
+      try:
+        with open("./config.json",encoding="utf-8") as jf:
+          self.dic_config = json.load(jf)
+      except:
+        with open("./config.json",encoding="cp932") as jf:
+          self.dic_config = json.load(jf)
+    except:
+      raise ("config.json shall set encoding utf-8 or cp932")
 
   def main(self):
+    print("start app")
     config_ = self.dic_config.copy()
 
     # Read text
@@ -33,7 +41,7 @@ class Prompt_Generator:
       if "\n" in text: text=text[:-1] 
       if text.find("|") == 0: text = text[1:]
       if text.rfind("|") == len(text)-1: text = text[:-1]
-      if text[-2] == "|":text=text[:-1]
+      if text.rfind("|") == len(text)-1 :text = text[:-1]
       if "|" in text:
         swich_loc.append(1)
         swich_text = text.split("|")
@@ -121,6 +129,8 @@ class Prompt_Generator:
       for index, writer in enumerate(result_text_list): 
         wf.write(writer)
         if index != len(result_text_list)-1: wf.write("\n")
+
+    print("end app")
 
   def create_list(self,l_text):
     result_list = list(itertools.product(*l_text))

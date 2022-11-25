@@ -1,7 +1,7 @@
 {
   "dir":{
     "input_text":"source.txt",
-    "output_path":"prompt_lists"
+    "output_path":"prompt_texts"
   },
   "output_settings":{
     "file_prefix":"date",
