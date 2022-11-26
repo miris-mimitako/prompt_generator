@@ -1,4 +1,3 @@
-from pathlib import Path
 from glob import glob
 import itertools
 import json
@@ -86,11 +85,15 @@ class Prompt_Generator:
           gen_text = gen_text[:-2]
           result_text_list.append(gen_text)
 
+    
+
     # make dir
-    if config_["dir"]["output_path"]:
-      output_path = self.output_path_gen(config_["dir"]["output_path"])
+    if config_["dir"]["output_dir"]:
+      output_dir_text = self.settings_name_conveter(config_["dir"]["output_dir"])
+      output_dir = self.output_dir_gen(output_dir_text)
     else:
-      output_path = Path(__file__).parent
+      output_dir = Path(__file__).parent
+
 
     # write prompt
 
@@ -101,37 +104,38 @@ class Prompt_Generator:
 
     # prefix settings
     if config_["output_settings"]["file_prefix"]:
-      prefix = self.pre_suf_fix_file_name_settings(config_["output_settings"]["file_prefix"], output_path)
+      prefix = self.settings_name_conveter(config_["output_settings"]["file_prefix"], output_dir)
       file_name = prefix + "-" + file_name
 
     # suffix settings
     if config_["output_settings"]["file_suffix"]:
-      suffix = self.pre_suf_fix_file_name_settings(config_["output_settings"]["file_suffix"], output_path)
+      suffix = self.settings_name_conveter(config_["output_settings"]["file_suffix"], output_dir)
       file_name = file_name + "-" + suffix
 
     # to convert text file
     file_name += ".txt" 
 
-    with open(os.path.join(output_path,file_name),"w") as wf:
+    with open(os.path.join(output_dir,file_name),"w") as wf:
       for index, writer in enumerate(result_text_list): 
         wf.write(writer)
         if index != len(result_text_list)-1: wf.write("\n")
 
     print("end app")
 
-  def pre_suf_fix_file_name_settings(self,setting_text, output_path):
+  def settings_name_conveter(self,setting_text, output_dir=None):
+    print (setting_text)
     if "{date}" in setting_text:
       now = datetime.now()
-      str_datetime_now = now.strftime("%Y%m%d-%H%M%S")
-      prefix = setting_text.replace("{date}", str_datetime_now)
+      str_datetime_now = now.strftime("%Y%m%d")
+      setting_text = setting_text.replace("{date}", str_datetime_now)
     if "{order_num}" in setting_text:
-      prefix = prefix.replace("{order_num}", str(len(list(Path(output_path).glob("*.txt"))) + 1))
+      setting_text = setting_text.replace("{order_num}", str(len(list(Path(output_dir).glob("*.txt"))) + 1))
 
-      return prefix
+    return setting_text
 
-  def output_path_gen(self,out_path_text):
+  def output_dir_gen(self,out_path_text):
     """
-    To mak output path
+    To make output path
     """
     if out_path_text.find(":")>0:
       #Absorute path
