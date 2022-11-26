@@ -1,21 +1,22 @@
-import glob
+from pathlib import Path
+from glob import glob
 import itertools
 import json
 from datetime import datetime
 import os
 from pathlib import Path
+from chardet import detect
 
 class Prompt_Generator:
   def __init__(self) -> None:
-    try:
+    with open("./config.json","rb") as bf:
+      bf_read = bf.read()
+      dict_config_encoding = detect(bf_read)
       try:
-        with open("./config.json",encoding="utf-8") as jf:
-          self.dic_config = json.load(jf)
+        with open("./config.json",encoding=dict_config_encoding["encoding"]) as json_config:
+          self.dic_config = json.load(json_config)
       except:
-        with open("./config.json",encoding="cp932") as jf:
-          self.dic_config = json.load(jf)
-    except:
-      raise ("config.json shall set encoding utf-8 or cp932")
+        raise ("config.jsonのエンコーディングが不明です。")
 
   def main(self):
     print("start app")
@@ -41,7 +42,7 @@ class Prompt_Generator:
       if "\n" in text: text=text[:-1] 
       if text.find("|") == 0: text = text[1:]
       if text.rfind("|") == len(text)-1: text = text[:-1]
-      if text.rfind("|") == len(text)-1 :text = text[:-1]
+      if text.rfind("|") == len(text)-1: text = text[:-1]
       if "|" in text:
         swich_loc.append(1)
         swich_text = text.split("|")
@@ -92,18 +93,24 @@ class Prompt_Generator:
       output_path = Path(__file__).parent
 
     # write prompt
-    file_name = config_["output_settings"]["main_name"]
-    if config_["output_settings"]["file_prefix"] == "date":
-      now = datetime.now()
-      prefix = now.strftime("%Y%m%d-%H%M%S-")
-      file_name = prefix + file_name
 
-    if config_["output_settings"]["file_sufix"]:
-      file_name = file_name + "-" + str(config_["output_settings"]["file_sufix"])
+    if config_["output_settings"]["main_name"]:
+      file_name = config_["output_settings"]["main_name"]
+    else:
+      file_name = "prompt"
 
-    file_name += ".txt"
+    # prefix settings
+    if config_["output_settings"]["file_prefix"]:
+      prefix = self.pre_suf_fix_file_name_settings(config_["output_settings"]["file_prefix"], output_path)
+      file_name = prefix + "-" + file_name
 
-    print(output_path)
+    # suffix settings
+    if config_["output_settings"]["file_suffix"]:
+      suffix = self.pre_suf_fix_file_name_settings(config_["output_settings"]["file_suffix"], output_path)
+      file_name = file_name + "-" + suffix
+
+    # to convert text file
+    file_name += ".txt" 
 
     with open(os.path.join(output_path,file_name),"w") as wf:
       for index, writer in enumerate(result_text_list): 
@@ -111,6 +118,16 @@ class Prompt_Generator:
         if index != len(result_text_list)-1: wf.write("\n")
 
     print("end app")
+
+  def pre_suf_fix_file_name_settings(self,setting_text, output_path):
+    if "{date}" in setting_text:
+      now = datetime.now()
+      str_datetime_now = now.strftime("%Y%m%d-%H%M%S")
+      prefix = setting_text.replace("{date}", str_datetime_now)
+    if "{order_num}" in setting_text:
+      prefix = prefix.replace("{order_num}", str(len(list(Path(output_path).glob("*.txt"))) + 1))
+
+      return prefix
 
   def output_path_gen(self,out_path_text):
     """
@@ -122,7 +139,7 @@ class Prompt_Generator:
       os.makedirs(out_path_text,exist_ok=True)
       file_path = out_path_text
     else:
-      dot_count = out_path_text.count() ## error
+      dot_count = out_path_text.count(".")
       if not dot_count:
         parent_path = Path(__file__).parent
         file_path = os.path.join(parent_path,out_path_text)
@@ -137,7 +154,7 @@ class Prompt_Generator:
         if prep_path[0] == "/":prep_path=prep_path[1:]
         file_path = os.path.join(parent_path,prep_path)
       else:
-        raise ("Directory generation error: Cannot create a folder more than 3 upper levels. ")
+        raise ("Directory generation error: Cannot create a folder more than 2 upper levels. ")
       os.makedirs(file_path,exist_ok=True)
       return file_path
 
