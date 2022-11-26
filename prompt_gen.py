@@ -87,29 +87,7 @@ class Prompt_Generator:
 
     # make dir
     if config_["dir"]["output_path"]:
-      if config_["dir"]["output_path"].find(":"):
-        #Absorute path
-        os.makedirs(config_["dir"]["output_path"],exist_ok=True)
-        output_path = config_["dir"]["output_path"]
-      else:
-        dot_count = config_["dir"]["output_path"].count()
-        if not dot_count:
-          parent_path = Path(__file__).parent
-          file_path = os.path.join(parent_path,config_["dir"]["output_path"])
-        elif dot_count == 1:
-          parent_path = Path(__file__).parent
-          prep_path = config_["dir"]["output_path"][1:]
-          if prep_path[0] == "/":prep_path=prep_path[1:]
-          file_path = os.path.join(parent_path,prep_path)
-        elif dot_count == 2:
-          parent_path = Path(__file__).parent.parent
-          prep_path = config_["dir"]["output_path"][2:]
-          if prep_path[0] == "/":prep_path=prep_path[1:]
-          file_path = os.path.join(parent_path,prep_path)
-        else:
-          raise ("Directory generation error: Cannot create a folder more than 3 upper levels. ")
-        os.makedirs(file_path,exist_ok=True)
-        output_path = file_path
+      output_path = self.output_path_gen(config_["dir"]["output_path"])
     else:
       output_path = Path(__file__).parent
 
@@ -125,12 +103,47 @@ class Prompt_Generator:
 
     file_name += ".txt"
 
+    print(output_path)
+
     with open(os.path.join(output_path,file_name),"w") as wf:
       for index, writer in enumerate(result_text_list): 
         wf.write(writer)
         if index != len(result_text_list)-1: wf.write("\n")
 
     print("end app")
+
+  def output_path_gen(self,out_path_text):
+    """
+    To mak output path
+    """
+    if out_path_text.find(":")>0:
+      #Absorute path
+      print(out_path_text.find(":"))
+      os.makedirs(out_path_text,exist_ok=True)
+      file_path = out_path_text
+    else:
+      dot_count = out_path_text.count() ## error
+      if not dot_count:
+        parent_path = Path(__file__).parent
+        file_path = os.path.join(parent_path,out_path_text)
+      elif dot_count == 1:
+        parent_path = Path(__file__).parent
+        prep_path = out_path_text[1:]
+        if prep_path[0] == "/":prep_path=prep_path[1:]
+        file_path = os.path.join(parent_path,prep_path)
+      elif dot_count == 2:
+        parent_path = Path(__file__).parent.parent
+        prep_path = out_path_text[2:]
+        if prep_path[0] == "/":prep_path=prep_path[1:]
+        file_path = os.path.join(parent_path,prep_path)
+      else:
+        raise ("Directory generation error: Cannot create a folder more than 3 upper levels. ")
+      os.makedirs(file_path,exist_ok=True)
+      return file_path
+
+  """
+  Prompt creation
+  """
 
   def create_list(self,l_text):
     result_list = list(itertools.product(*l_text))
