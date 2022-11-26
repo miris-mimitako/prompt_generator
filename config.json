@@ -1,12 +1,12 @@
 {
   "dir":{
     "input_text":"source.txt",
-    "output_path":"prompt_texts"
+    "output_dir":"prompts/{date}"
   },
   "output_settings":{
-    "file_prefix":"date",
+    "file_prefix":"{order_num}",
     "main_name":"prompt_list",
-    "file_sufix":""
+    "file_suffix":"{date}"
   },
   "prompt_settings":{
     "strong_brackets":"()",
