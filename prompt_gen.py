@@ -5,6 +5,7 @@ from datetime import datetime
 import os
 from pathlib import Path
 from chardet import detect
+import shutil
 
 class Prompt_Generator:
   def __init__(self) -> None:
@@ -80,7 +81,7 @@ class Prompt_Generator:
           if "/" in text: text = self.weak_prompt(text=text)
           if text.rfind(" ") == len(text): text=text[:-1]
           if text.rfind(",") == len(text): text=text[:-1]
-          gen_text += text + ", "
+          gen_text += text + " "
         else:
           gen_text = gen_text[:-2]
           result_text_list.append(gen_text)
@@ -119,6 +120,9 @@ class Prompt_Generator:
       for index, writer in enumerate(result_text_list): 
         wf.write(writer)
         if index != len(result_text_list)-1: wf.write("\n")
+
+    
+    shutil.copy("source.txt",os.path.join(r"C:\Users\0720k\myapplications\prompt_generator\source","source-"+file_name))
 
     print("end app")
 
