@@ -83,7 +83,7 @@ class Prompt_Generator:
           if text.rfind(",") == len(text): text=text[:-1]
           gen_text += text + " "
         else:
-          gen_text = gen_text[:-2]
+          gen_text = gen_text[:-1]
           result_text_list.append(gen_text)
 
     
